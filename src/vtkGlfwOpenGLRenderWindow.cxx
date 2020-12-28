@@ -72,10 +72,8 @@ void
 vtkGlfwOpenGLRenderWindow::SetWindowName(const char* title)
 {
   this->Superclass::SetWindowName(title);
-  if (this->WindowId) {
+  if (this->WindowId)
     glfwSetWindowTitle(this->WindowId, title);
-    // SDL_SetWindowTitle(this->WindowId, title);
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -97,12 +95,6 @@ vtkGlfwOpenGLRenderWindow::PushContext()
   this->WindowStack.push(current);
   if (current != this->ContextId)
     this->MakeCurrent();
-  // SDL_GLContext current = SDL_GL_GetCurrentContext();
-  // this->ContextStack.push(current);
-  // this->WindowStack.push(SDL_GL_GetCurrentWindow());
-  // if (current != this->ContextId) {
-  // this->MakeCurrent();
-  //}
 }
 
 void
@@ -111,16 +103,10 @@ vtkGlfwOpenGLRenderWindow::PopContext()
   auto current = glfwGetCurrentContext();
   auto target = this->ContextStack.top();
   auto wind = this->WindowStack.top();
-  // SDL_GLContext current = SDL_GL_GetCurrentContext();
-  // SDL_GLContext target = this->ContextStack.top();
-  // SDL_Window* win = this->WindowStack.top();
   this->ContextStack.pop();
   this->WindowStack.pop();
   if (target != current)
     glfwMakeContextCurrent(wind);
-  // if (target != current) {
-  // SDL_GL_MakeCurrent(win, target);
-  //}
 }
 
 //------------------------------------------------------------------------------
@@ -130,15 +116,12 @@ bool
 vtkGlfwOpenGLRenderWindow::IsCurrent()
 {
   return this->WindowId == glfwGetCurrentContext();
-  // return this->ContextId != 0 && this->ContextId ==
-  // SDL_GL_GetCurrentContext();
 }
 
 bool
 vtkGlfwOpenGLRenderWindow::SetSwapControl(int i)
 {
   glfwSwapInterval(i);
-  // SDL_GL_SetSwapInterval(i);
   return true;
 }
 
@@ -154,7 +137,6 @@ vtkGlfwOpenGLRenderWindow::SetSize(int x, int y)
     }
     if (this->WindowId) {
       glfwSetWindowSize(this->WindowId, x, y);
-      // SDL_SetWindowSize(this->WindowId, x, y);
     }
     this->Render();
   }
@@ -169,7 +151,6 @@ vtkGlfwOpenGLRenderWindow::SetPosition(int x, int y)
     this->Position[1] = y;
     if (this->Mapped) {
       glfwSetWindowPos(this->WindowId, x, y);
-      // SDL_SetWindowPosition(this->WindowId, x, y);
     }
   }
 }
@@ -180,7 +161,6 @@ vtkGlfwOpenGLRenderWindow::Frame()
   this->Superclass::Frame();
   if (!this->AbortRender && this->DoubleBuffer && this->SwapBuffers) {
     glfwSwapBuffers(this->WindowId);
-    // SDL_GL_SwapWindow(this->WindowId);
   }
 }
 
@@ -207,10 +187,8 @@ vtkGlfwOpenGLRenderWindow::SetShowWindow(bool val)
   if (this->WindowId) {
     if (val) {
       glfwShowWindow(this->WindowId);
-      // SDL_ShowWindow(this->WindowId);
     } else {
       glfwHideWindow(this->WindowId);
-      // SDL_HideWindow(this->WindowId);
     }
     this->Mapped = val;
   }
@@ -220,10 +198,6 @@ vtkGlfwOpenGLRenderWindow::SetShowWindow(bool val)
 void
 vtkGlfwOpenGLRenderWindow::CreateAWindow()
 {
-  // int x =
-  //((this->Position[0] >= 0) ? this->Position[0] : SDL_WINDOWPOS_UNDEFINED);
-  // int y =
-  //((this->Position[1] >= 0) ? this->Position[1] : SDL_WINDOWPOS_UNDEFINED);
   int height = ((this->Size[1] > 0) ? this->Size[1] : 300);
   int width = ((this->Size[0] > 0) ? this->Size[0] : 300);
   this->SetSize(width, height);
@@ -235,19 +209,6 @@ vtkGlfwOpenGLRenderWindow::CreateAWindow()
                                     (GLFWwindow*)this->GetGenericParentId());
   this->MakeCurrent();
 
-  // this->WindowId = SDL_CreateWindow(this->WindowName,
-  //                                  x,
-  //                                  y,
-  //                                  width,
-  //                                  height,
-  //                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-  /* SDL_SetWindowResizable(this->WindowId, SDL_TRUE);*/
-  // if (this->WindowId) {
-  //  int idx = SDL_GetWindowDisplayIndex(this->WindowId);
-  //  float hdpi = 72.0;
-  //  SDL_GetDisplayDPI(idx, nullptr, &hdpi, nullptr);
-  //  this->SetDPI(hdpi);
-  //}
   if (this->WindowId) {
     GLFWmonitor* mon = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(mon);
@@ -275,26 +236,6 @@ vtkGlfwOpenGLRenderWindow::CreateAWindow()
 void
 vtkGlfwOpenGLRenderWindow::Initialize()
 {
-  // int res = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
-
-  // if (res) {
-  // vtkErrorMacro("Error initializing SDL " << SDL_GetError());
-  //}
-
-  // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-
-#ifdef GL_ES_VERSION_3_0
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-  // SDL_GL_CONTEXT_PROFILE_ES);
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#else
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-  // SDL_GL_CONTEXT_PROFILE_CORE);
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#endif
-
   if (!glfwInit())
     vtkErrorMacro(<< "Error initializing GLFW3 ");
 
@@ -334,7 +275,8 @@ vtkGlfwOpenGLRenderWindow::DestroyWindow()
 {
   this->Clean();
   if (this->WindowId) {
-    // SDL_DestroyWindow(this->WindowId);
+    auto wnd = static_cast<GLFWwindow*>(this->WindowId);
+    glfwDestroyWindow(this->WindowId);
     this->WindowId = nullptr;
   }
 }
@@ -345,12 +287,8 @@ vtkGlfwOpenGLRenderWindow::GetSize(void)
 {
   // if we aren't mapped then just return the ivar
   if (this->WindowId && this->Mapped) {
-    int w = 0;
-    int h = 0;
-
-    // SDL_GetWindowSize(this->WindowId, &w, &h);
-    this->Size[0] = w;
-    this->Size[1] = h;
+    auto wnd = static_cast<GLFWwindow*>(this->WindowId);
+    glfwGetWindowSize(wnd, this->Size, this->Size + 1);
   }
 
   return this->vtkOpenGLRenderWindow::GetSize();
@@ -360,11 +298,11 @@ vtkGlfwOpenGLRenderWindow::GetSize(void)
 int*
 vtkGlfwOpenGLRenderWindow::GetScreenSize(void)
 {
-  // SDL_Rect rect;
-  // SDL_GetDisplayBounds(0, &rect);
-  // this->Size[0] = rect.w;
-  // this->Size[1] = rect.h;
-
+  auto wnd = static_cast<GLFWwindow*>(this->WindowId);
+  GLFWmonitor* mon = glfwGetWindowMonitor(wnd);
+  const GLFWvidmode* mode = glfwGetVideoMode(mon);
+  this->Size[0] = mode->width;
+  this->Size[1] = mode->height;
   return this->Size;
 }
 
@@ -377,9 +315,9 @@ vtkGlfwOpenGLRenderWindow::GetPosition(void)
     return this->Position;
   }
 
+  auto wnd = static_cast<GLFWwindow*>(this->WindowId);
   //  Find the current window position
-  //  x,y,&this->Position[0],&this->Position[1],&child);
-
+  glfwGetWindowPos(wnd, this->Position, this->Position + 1);
   return this->Position;
 }
 
@@ -397,8 +335,12 @@ vtkGlfwOpenGLRenderWindow::SetFullScreen(vtkTypeBool arg)
 
   // set the mode
   this->FullScreen = arg;
-  // SDL_SetWindowFullscreen(this->WindowId,
-  //                        arg ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+  auto wnd = static_cast<GLFWwindow*>(this->WindowId);
+  GLFWmonitor* mon = glfwGetWindowMonitor(wnd);
+  const GLFWvidmode* mode = glfwGetVideoMode(mon);
+  glfwSetWindowMonitor(
+    wnd, (arg ? mon : NULL), 0, 0, mode->width, mode->height, mode->refreshRate);
+
   this->Modified();
 }
 
@@ -415,12 +357,14 @@ vtkGlfwOpenGLRenderWindow::PrintSelf(ostream& os, vtkIndent indent)
 void
 vtkGlfwOpenGLRenderWindow::HideCursor()
 {
-  // SDL_ShowCursor(SDL_DISABLE);
+  auto wnd = static_cast<GLFWwindow*>(this->WindowId);
+  glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
 //------------------------------------------------------------------------------
 void
 vtkGlfwOpenGLRenderWindow::ShowCursor()
 {
-  // SDL_ShowCursor(SDL_ENABLE);
+  auto wnd = static_cast<GLFWwindow*>(this->WindowId);
+  glfwSetInputMode(wnd, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }

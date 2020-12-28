@@ -2,7 +2,6 @@
 #define vtkGlfwRenderWindowInteractor_h
 
 #include "vtkRenderWindowInteractor.h"
-#include <map>                    // for ivar
 #include <GLFW/glfw3.h>
 
 class vtkGlfwRenderWindowInteractor
@@ -55,23 +54,25 @@ public:
    */
   void ExitCallback() override;
 
-  virtual void OnChar(GLFWwindow* wnd, unsigned int codepoint);
-  virtual void OnDrop(GLFWwindow* wnd, int count, const char** paths);
-  virtual void OnMouseMove(GLFWwindow* wnd, double x, double y);
-  virtual void OnMouseBtn(GLFWwindow* wnd, int button, int action, int mods);
-  virtual void OnMouseWhl(GLFWwindow* wnd, double x, double y);
-  virtual void OnKey(GLFWwindow* wnd,
+  virtual int OnChar(GLFWwindow* wnd, unsigned int codepoint);
+  virtual int OnDrop(GLFWwindow* wnd, int count, const char** paths);
+  virtual int OnEnter(GLFWwindow* wnd, int entered);
+  virtual int OnMouseMove(GLFWwindow* wnd, double x, double y);
+  virtual int OnMouseBtn(GLFWwindow* wnd, int button, int action, int mods);
+  virtual int OnMouseWhl(GLFWwindow* wnd, double x, double y);
+  virtual int OnKey(GLFWwindow* wnd,
                      int key,
                      int scancode,
                      int action,
                      int mods);
-  virtual void OnSize(GLFWwindow* wnd, int w, int h);
+  virtual int OnSize(GLFWwindow* wnd, int w, int h);
 
 protected:
   vtkGlfwRenderWindowInteractor();
   ~vtkGlfwRenderWindowInteractor() override;
 
   bool InstallCallbacks;
+  bool MouseInWindow;
   
   //@{
   /**

@@ -7,6 +7,8 @@
 #include <vtkProperty.h>
 #include <vtkGlfwOpenGLRenderWindow.h>
 #include <vtkGlfwRenderWindowInteractor.h>
+#include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkInteractorStyleImage.h>
 #include <vtkRenderer.h>
 
 #include <array>
@@ -57,12 +59,16 @@ main(int, char*[])
   renderWindow->SetSize(300, 300);
   renderWindow->AddRenderer(renderer);
   renderWindow->SetWindowName("Cylinder");
+  renderWindow->SetMultiSamples(8);
 
   // The render window interactor captures mouse events
   // and will perform appropriate camera or actor manipulation
   // depending on the nature of the events.
   vtkNew<vtkGlfwRenderWindowInteractor> renderWindowInteractor;
   renderWindowInteractor->SetRenderWindow(renderWindow);
+
+  vtkNew<vtkInteractorStyleTrackballCamera> iStyle;
+  renderWindowInteractor->SetInteractorStyle(iStyle);
 
   // This starts the event loop and as a side effect causes an initial render.
   renderWindow->Render();
