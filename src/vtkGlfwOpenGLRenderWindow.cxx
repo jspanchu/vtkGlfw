@@ -20,7 +20,7 @@
 vtkStandardNewMacro(vtkGlfwOpenGLRenderWindow);
 
 const std::string vtkGlfwOpenGLRenderWindow::DEFAULT_BASE_WINDOW_NAME =
-  "Visualization Toolkit - SDL2OpenGL #";
+  "Visualization Toolkit - GLFW3OpenGL #";
 
 vtkGlfwOpenGLRenderWindow::vtkGlfwOpenGLRenderWindow()
   : WindowId(nullptr)
